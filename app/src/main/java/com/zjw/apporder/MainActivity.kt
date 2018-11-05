@@ -1,7 +1,10 @@
 package com.zjw.apporder
 
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.widget.TextView
 import com.zjw.tablayout.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -15,16 +18,10 @@ class MainActivity : AppCompatActivity() {
         var tabNames = ArrayList<String>()
         var fragments = ArrayList<MyFragemnt>()
         var strList = arrayListOf(
-            "A卡A",
-            "A卡 卡A",
-            "A卡 卡 卡A"
-            ,
-            "A卡 卡 卡 卡A",
-            "A卡 卡 卡A",
-            "A卡 卡A",
-            "A卡A"
+            "资料",
+            "动态",
+            "相册"
         )
-
         strList.forEach {
             tabNames.add(it)
             fragments.add(MyFragemnt())
@@ -33,11 +30,11 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = fragments.size
 
-        //tabLayout.tabMode = TabLayout.MODE_FIXED
-        tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
+        tabLayout.tabMode = TabLayout.MODE_FIXED
+//        tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
 
-        tabLayout.tabGravity = TabLayout.GRAVITY_CENTER
-        //tabLayout.tabGravity = TabLayout.GRAVITY_FILL
+//        tabLayout.tabGravity = TabLayout.GRAVITY_CENTER
+        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         //设置tablayout 切换tab的动画
         tabLayout.isNeedSwitchAnimation = true
@@ -54,15 +51,42 @@ class MainActivity : AppCompatActivity() {
         tabLayout.setupWithViewPager(viewPager)
 
         //指示器不需要显示PageAdapter 中的标题所以禁掉
-        page_indicator.setPageTitleVisible(false)
-        page_indicator.setupWithViewPager(viewPager)
 
         for (index in 0 until tabLayout.tabCount) {
             //依次获取标签
             val tab = tabLayout.getTabAt(index)
+            if (index == 1) {
+//                tab?.setCustomView(R.layout.design_layout_tab_text1)
+            } else {
+                tab?.setCustomView(R.layout.design_layout_tab_text2)
+
+            }
             //为每个标签设置自定义布局(如果设置了自定义view 原来系统默认的ImageView和TextView 为gone)
-            tab?.setCustomView(R.layout.item_tab)
+//            tab?.setCustomView(R.layout.item_tab)
         }
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            var mCurrentPosition: Int = -1
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                Log.e("Test", "onTabUnselected position == " + tab.position)
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                Log.e("Test", "onTabSelected position == " + tab.position)
+                val textView: TextView = tab.customView!!.findViewById(android.R.id.text1)
+                if (mCurrentPosition == tab.position) {
+                    textView.setCompoundDrawables(null, null, null, null)
+                } else {
+                    mCurrentPosition = tab.position
+                    textView.setCompoundDrawables(null, null, ContextCompat.getDrawable(textView.context, R.drawable.ic_checkbox), null)
+                }
+            }
+
+        })
     }
 
     internal fun dpToPx(dps: Int): Int {
